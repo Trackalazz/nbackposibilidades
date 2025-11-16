@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>CosmoN-back - Entrenamiento Cerebral</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        :root {
+            --primary-gradient: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            --secondary-gradient: linear-gradient(90deg, #ff7e5f, #feb47b);
+            --accent-color: #ffb366;
+            --card-bg: rgba(20, 15, 60, 0.85);
+            --text-light: #e0e0ff;
+            --text-secondary: #a0a0d0;
+        }
+        
+        body {
+            /* Permitir scroll si el contenido excede la altura */
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            scroll-behavior: smooth;
+        }
+        
+        /* Navegación flotante */
+        .floating-nav {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 25, 70, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            gap: 1.5rem;
+            z-index: 100;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 0.6rem 1rem;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .nav-btn i {
+            margin-bottom: 0.3rem;
+            font-size: 1.3rem;
+        }
+        
+        .nav-btn:hover, .nav-btn.active {
+            background: var(--secondary-gradient);
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        /* Secciones principales */
+        .section {
+            /* Se mantiene para el efecto de una sola página, pero el body permite el scroll */
+            min-height: 100vh; 
+            padding: 5rem 1.5rem 6rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            width: 100%;
+        }
+        
+        .section-title {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            background: var(--secondary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(255, 126, 95, 0.5);
+            letter-spacing: 0.5px;
+        }
+        
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        /* Sección de configuración */
+        .control-panel {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 100%;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            margin-bottom: 2rem;
+        }
+        
+        .panel-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent-color);
+            text-align: center;
+        }
+        
+        .setting-group {
+            margin-bottom: 1.8rem;
+        }
+        
+        .setting-label {
+            display: block;
+            margin-bottom: 0.8rem;
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+        
+        .options-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+        
+        .option-btn {
+            background: rgba(60, 40, 120, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-light);
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 70px;
+            text-align: center;
+            font-size: 1rem;
+        }
+        
+        .option-btn:hover {
+            background: rgba(80, 60, 160, 0.8);
+            transform: translateY(-3px);
+        }
+        
+        .option-btn.active {
+            background: var(--secondary-gradient);
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(255, 126, 95, 0.4);
+        }
+        
+        .btn {
+            background: var(--secondary-gradient);
+            border: none;
+            color: white;
+            padding: 1.1rem;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            box-shadow: 0 5px 15px rgba(255, 126, 95, 0.3);
+            max-width: 500px;
+            display: block;
+            margin: 2rem auto 0;
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 126, 95, 0.4);
+        }
+        
+        /* Sección de juego */
+        .game-container {
+            width: 100%;
+            max-width: 1000px; /* Aumentado para triple mode */
+            background: rgba(15, 10, 40, 0.8);
+            border-radius: 20px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            margin-top: 1rem;
+        }
+        
+        .game-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            margin-bottom: 1.5rem;
+        }
+        
+        .game-title {
+            font-size: 1.6rem;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+        
+        .game-stats {
+            display: flex;
+            gap: 1.2rem;
+        }
+        
+        .stat-box {
+            background: rgba(30, 25, 70, 0.7);
+            border-radius: 12px;
+            padding: 0.7rem 1.2rem;
+            text-align: center;
+            min-width: 100px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+        
+        .game-content {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 1rem 0;
+            margin: 1.5rem 0;
+        }
+        
+        .word-display {
+            font-size: 2.2rem;
+            text-align: center;
+            margin: 1rem 0;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+            width: 100%;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .dual-display, .triple-display {
+            display: flex;
+            width: 100%;
+            justify-content: space-around;
+            gap: 1.5rem;
+        }
+        
+        .dual-column {
+            text-align: center;
+            width: 48%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .triple-column {
+            text-align: center;
+            width: 32%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .dual-label {
+            font-size: 1.3rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+        
+        .key-indicator {
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 8px;
+            padding: 0.3rem 0.8rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .word-box {
+            background: rgba(40, 30, 90, 0.7);
+            border-radius: 20px;
+            padding: 2rem 1.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            text-align: center;
+            line-height: 1.4;
+        }
+        
+        .game-controls {
+            display: flex;
+            gap: 1.2rem;
+            width: 100%;
+            padding: 1rem 0 1rem 0;
+            margin-top: 1rem;
+        }
+        
+        .control-btn {
+            flex: 1;
+            padding: 1.3rem;
+            font-size: 1.3rem;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            color: #fff;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-5px);
+        }
+        
+        .match-btn-a {
+            background: linear-gradient(90deg, #ff6b6b, #ff8e53); /* Rojo/Naranja */
+        }
+        
+        .match-btn-l {
+            background: linear-gradient(90deg, #4facfe, #00f2fe); /* Azul/Cian */
+        }
+
+        .match-btn-k {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0); /* Púrpura */
+        }
+        
+        .match-btn-a:hover {
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+        }
+        
+        .match-btn-l:hover {
+            box-shadow: 0 10px 25px rgba(0, 242, 254, 0.4);
+        }
+
+        .match-btn-k:hover {
+            box-shadow: 0 10px 25px rgba(142, 45, 226, 0.4);
+        }
+        
+        /* Sección de resultados */
+        .results-container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(30, 25, 70, 0.9);
+            border-radius: 25px;
+            padding: 2.5rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            margin-top: 2rem;
+        }
+        
+        .results-title {
+            font-size: 2.2rem;
+            color: var(--accent-color);
+            margin-bottom: 1.5rem;
+        }
+        
+        .results-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .result-label {
+            color: var(--text-light);
+            font-size: 1.2rem;
+        }
+        
+        .result-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+        
+        /* Instrucciones */
+        .instructions-container {
+            background: rgba(30, 25, 70, 0.8);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+            width: 100%;
+            max-width: 1000px; /* Aumentado para triple mode */
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .instructions-title {
+            color: var(--accent-color);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .instructions-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .instruction-card {
+            background: rgba(40, 35, 85, 0.6);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .instruction-card h3 {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .instruction-card p {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+        
+        .instruction-card i {
+            background: var(--secondary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.5rem;
+        }
+        
+        /* Efectos de partículas de fondo */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+        
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        .pulse {
+            animation: pulse 0.4s ease;
+        }
+        
+        .float {
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .section {
+                padding: 4rem 1rem 5rem 1rem;
+            }
+            
+            .section-title {
+                font-size: 2.2rem;
+            }
+            
+            .panel-title {
+                font-size: 1.6rem;
+            }
+            
+            .option-btn {
+                padding: 0.7rem;
+                font-size: 0.95rem;
+            }
+            
+            .btn {
+                padding: 1rem;
+                font-size: 1.1rem;
+            }
+            
+            .game-title {
+                font-size: 1.4rem;
+            }
+            
+            .stat-box {
+                padding: 0.6rem 1rem;
+                min-width: 80px;
+            }
+            
+            .stat-label {
+                font-size: 0.8rem;
+            }
+            
+            .stat-value {
+                font-size: 1.4rem;
+            }
+            
+            .word-display {
+                font-size: 1.8rem;
+            }
+            
+            .dual-label {
+                font-size: 1.1rem;
+            }
+            
+            .word-box {
+                font-size: 1.6rem;
+                padding: 1.5rem 1rem;
+            }
+            
+            .control-btn {
+                padding: 1.1rem;
+                font-size: 1.1rem;
+            }
+            
+            .results-title {
+                font-size: 1.8rem;
+            }
+            
+            .result-label {
+                font-size: 1.1rem;
+            }
+            
+            .result-value {
+                font-size: 1.2rem;
+            }
+            
+            .floating-nav {
+                gap: 0.8rem;
+                padding: 0.6rem 1rem;
+            }
+            
+            .nav-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.9rem;
+            }
+            
+            .nav-btn i {
+                font-size: 1.1rem;
+            }
+            /* Ajuste para dual/triple en pantallas medianas */
+            .dual-column, .triple-column {
+                width: 48%; /* Dos columnas por fila en triple mode */
+            }
+
+            .triple-display {
+                flex-wrap: wrap;
+            }
+
+            .game-controls {
+                flex-wrap: wrap;
+            }
+
+            .control-btn {
+                flex: 1 1 45%; /* Dos botones por fila */
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .dual-display, .triple-display {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .dual-column, .triple-column {
+                width: 100%;
+            }
+            
+            .game-controls {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+            
+            .stat-box {
+                padding: 0.5rem 0.8rem;
+                min-width: 70px;
+                flex: 1;
+            }
+            
+            .stat-value {
+                font-size: 1.2rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .section-subtitle {
+                font-size: 1rem;
+            }
+        }
+        
+        /* Soporte para iOS notch */
+        @supports(padding: max(0px)) {
+            body {
+                padding-left: max(1rem, env(safe-area-inset-left));
+                padding-right: max(1rem, env(safe-area-inset-right));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <nav class="floating-nav">
+        <button class="nav-btn active" data-target="config-section">
+            <i class="fas fa-cog"></i>
+            <span>Configuración</span>
+        </button>
+        <button class="nav-btn" data-target="game-section">
+            <i class="fas fa-gamepad"></i>
+            <span>Juego</span>
+        </button>
+        <button class="nav-btn" data-target="results-section">
+            <i class="fas fa-chart-bar"></i>
+            <span>Resultados</span>
+        </button>
+        <button class="nav-btn" data-target="instructions-section">
+            <i class="fas fa-info-circle"></i>
+            <span>Instrucciones</span>
+        </button>
+    </nav>
+    
+    <section id="config-section" class="section">
+        <div class="section-header">
+            <h1 class="section-title">CosmoN-back</h1>
+            <p class="section-subtitle">Entrena tu memoria con este desafío cósmico de palabras</p>
+        </div>
+        
+        <div class="control-panel">
+            <h2 class="panel-title">Configura tu Viaje</h2>
+            
+            <div class="setting-group">
+                <label class="setting-label">Nivel N-back (1-8)</label>
+                <div class="options-container">
+                    <div class="option-btn active" data-value="1">1</div>
+                    <div class="option-btn" data-value="2">2</div>
+                    <div class="option-btn" data-value="3">3</div>
+                    <div class="option-btn" data-value="4">4</div>
+                    <div class="option-btn" data-value="5">5</div>
+                    <div class="option-btn" data-value="6">6</div>
+                    <div class="option-btn" data-value="7">7</div>
+                    <div class="option-btn" data-value="8">8</div>
+                </div>
+            </div>
+            
+            <div class="setting-group">
+                <label class="setting-label">Velocidad de las Palabras</label>
+                <div class="options-container">
+                    <div class="option-btn" data-value="1">1s</div>
+                    <div class="option-btn active" data-value="2">2s</div>
+                    <div class="option-btn" data-value="3">3s</div>
+                    <div class="option-btn" data-value="4">4s</div>
+                    <div class="option-btn" data-value="5">5s</div>
+                </div>
+            </div>
+            
+            <div class="setting-group">
+                <label class="setting-label">Modo de Juego</label>
+                <div class="options-container">
+                    <div class="option-btn active" data-value="simple">Simple</div>
+                    <div class="option-btn" data-value="dual">Dual</div>
+                    <div class="option-btn" data-value="triple">Triple</div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn" id="startBtn">
+            <i class="fas fa-rocket"></i> Iniciar Viaje Cósmico
+        </button>
+    </section>
+    
+    <section id="game-section" class="section" style="display: none;">
+        <div class="section-header">
+            <h1 class="section-title">Desafío Cósmico</h1>
+            <p class="section-subtitle">¡Enfócate y demuestra tu poder de memoria!</p>
+        </div>
+        
+        <div class="game-container">
+            <div class="game-header">
+                <div class="game-title">Nivel: <span id="levelDisplay">1</span>-back</div>
+                <div class="game-stats">
+                    <div class="stat-box">
+                        <div class="stat-label">ACIERTOS</div>
+                        <div class="stat-value" id="scoreDisplay">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">FALLOS</div>
+                        <div class="stat-value" id="errorsDisplay">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="game-content">
+                <div class="word-display" id="wordDisplay">
+                    <div style="text-align: center;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 3rem; margin-bottom: 1rem; color: #ffb366;"></i>
+                        <p>Preparando el viaje cósmico...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="game-controls">
+                <button class="control-btn match-btn-a" id="matchABtn">
+                    <span>Coincide (A)</span>
+                    <span class="key-indicator">A</span>
+                </button>
+                <button class="control-btn match-btn-l" id="matchLBtn">
+                    <span>Coincide (L)</span>
+                    <span class="key-indicator">L</span>
+                </button>
+                <button class="control-btn match-btn-k" id="matchKBtn" style="display: none;">
+                    <span>Coincide (K)</span>
+                    <span class="key-indicator">K</span>
+                </button>
+            </div>
+        </div>
+    </section>
+    
+    <section id="results-section" class="section" style="display: none;">
+        <div class="section-header">
+            <h1 class="section-title">Resultados Estelares</h1>
+            <p class="section-subtitle">Revisa tu desempeño en el desafío cósmico</p>
+        </div>
+        
+        <div class="results-container">
+            <h2 class="results-title">Tu Viaje Cósmico</h2>
+            
+            <div class="results-stats">
+                <div class="result-item">
+                    <span class="result-label">Puntuación Total:</span>
+                    <span class="result-value" id="finalScore">0</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Aciertos:</span>
+                    <span class="result-value" id="finalHits">0/0</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Precisión:</span>
+                    <span class="result-value" id="finalAccuracy">0%</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Nivel:</span>
+                    <span class="result-value" id="finalLevel">1-back</span>
+                </div>
+            </div>
+            
+            <button class="btn" id="playAgainBtn">
+                <i class="fas fa-redo"></i> Jugar de Nuevo
+            </button>
+        </div>
+    </section>
+    
+    <section id="instructions-section" class="section" style="display: none;">
+        <div class="section-header">
+            <h1 class="section-title">Instrucciones Cósmicas</h1>
+            <p class="section-subtitle">Aprende cómo dominar el desafío de memoria</p>
+        </div>
+        
+        <div class="instructions-container">
+            <h2 class="instructions-title">Guía del Viajero Estelar</h2>
+            
+            <div class="instructions-content">
+                <div class="instruction-card">
+                    <h3><i class="fas fa-brain"></i> Concepto Básico</h3>
+                    <p>El juego N-back es un ejercicio de memoria que te desafía a recordar información presentada "N" pasos atrás en la secuencia.</p>
+                </div>
+                
+                <div class="instruction-card">
+                    <h3><i class="fas fa-gamepad"></i> Modo Simple</h3>
+                    <p>En este modo, se presenta una palabra a la vez. Presiona **"Coincide (A)"** cuando la palabra actual coincida con la que apareció 'N' pasos atrás.</p>
+                </div>
+                
+                <div class="instruction-card">
+                    <h3><i class="fas fa-chess-board"></i> Modo Dual</h3>
+                    <p>En modo dual, se presentan dos palabras simultáneamente. Presiona **"Coincide (A)"** para la columna izquierda o **"Coincide (L)"** para la derecha cuando detectes una coincidencia en la respectiva columna.</p>
+                </div>
+
+                <div class="instruction-card">
+                    <h3><i class="fas fa-layer-group"></i> Modo Triple (¡Nuevo!)</h3>
+                    <p>En modo triple, se presentan tres palabras. Utiliza **"Coincide (A)"** para la izquierda, **"Coincide (L)"** para la columna central, y **"Coincide (K)"** para la columna de la derecha.</p>
+                </div>
+                
+                <div class="instruction-card">
+                    <h3><i class="fas fa-chart-line"></i> Progresión</h3>
+                    <p>Comienza con niveles bajos (1-back o 2-back) y aumenta gradualmente la dificultad. Los niveles más altos requieren mayor capacidad de memoria.</p>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn" id="backToGameBtn">
+            <i class="fas fa-rocket"></i> Comenzar Desafío
+        </button>
+    </section>
+
+    <script>
+        // Lista de palabras proporcionada
+        const wordList = [
+            "Luminaria", "Eutimia democrítea", "Griota", "Mansionario", "Peristilo", 
+            "Reflación", "Golmajerías", "Talabartero", "Tanaceto", "Niple", 
+            "Floema", "Eclisa", "Entreverar", "Velón", "Liza", 
+            "Escala de Kinsey", "Letargia", "Ulema", "Alcrebite", "Almuédano", 
+            "Injerencia", "Gopi", "Sari", "Arlocarpo", "Anatematizar", 
+            "Atiplar", "Refrendar", "Heraldo", "Ruar", "Marajá", 
+            "Vermiforme", "Diquelar", "Conterráneo", "Icástico", "Clariosa", 
+            "Alienígeno", "Safismo", "Esclavón", "Veterotestamentario", "Certitud", 
+            "Contemporizar", "Parleruelo", "Anafaga", "Nínfula", "Arcanidad", 
+            "Linajudo", "Cendolilla", "Farota", "Indiyudicable", "Prohombre", 
+            "Hozar", "Arrobar", "Ciar", "Monumentalismo", "Hontanar", 
+            "Borbollonear", "Jalde", "Retallecer", "Rema", "Desenfadaderas", 
+            "Ajaspajas", "Trinca", "Apofenia", "Anuencia", "Espita", 
+            "Ripio", "Callonca", "Advenedizo", "Zahondar", "Soteriología", 
+            "Ganguear", "Atezar", "Existimar", "Rabí", "Socaliña", 
+            "Harneruelo", "Tajuel", "Gualdrapa", "Mamía", "Hipostariar", 
+            "Recipiendario", "Ventear", "Ventero", "Ludificar", "Cáfila", 
+            "Impasse", "Personalismo", "Desrostrar", "Esguardamillar", "Munífico", 
+            "Monóstolos", "Cristal de Murano", "Veranda", "Juridificar", "Deslavar", 
+            "Deslavazar", "Alcaldable", "Mollejo", "Rafal", "Desbazadero", 
+            "Zurriago", "Roela", "Olpe", "Herropea", "Desgalgadero", 
+            "Ramalear", "Torpor", "Estragamiento", "Anastos", "Anastómosis", 
+            "Anastar", "Anastasiografía", "Mónada", "Causa pública", "Impromptu", 
+            "Fámulo", "Fisga", "Encaecer", "Ministrar", "Contribular", 
+            "Protomártir", "Jaraíz", "Chafariz", "Zafariche", "Limazo", 
+            "Bilocarse", "Escarnecer", "Escarnidor", "Nosomántica", "Moyuelo", 
+            "Encalamocarse", "Albear", "Jalbegue", "Enjalbiego", "Faldegar", 
+            "Pugnaz", "Ultracrepidario", "Simonía", "Idiolecto", "Congloriar", 
+            "Añascar", "Lambiscón", "Patronímico", "Hipodámico", "Leontina", 
+            "Salvoconducto", "Parihuela", "Ayuso", "Motilar", "Baroto", 
+            "Batanga", "Galeoto", "Proceleusmático", "Procela", "Rorante", 
+            "Diálaga", "Alperujo", "Esforrocinar", "Costribar", "Buhedo", 
+            "Buhedal", "Partear", "Conflaglación", "Sosañar", "Raposo", 
+            "Calvero", "Airón", "Trilita", "Cabrillear", "Slot-Machine", 
+            "Encabritar", "Escamotear", "Pitañoso", "Barcino", "Ímprobo", 
+            "Almadía", "Trabucar", "Anonadar", "Roblar", "Superchería", 
+            "Aplebeyar", "Sementera", "Yunto", "Volquete", "Descuaje", 
+            "Roturar", "Cinerario", "Amartelamiento", "Fachenda", "Gollete", 
+            "Floresta", "Jenízaro", "Apologético", "Encomiástico", "Patrístico", 
+            "Aljófar", "Jaiberlia", "Estro", "Platea", "Ladinización", 
+            "Lichera", "Redhibir", "Alunamiento", "Relinga", "Reveza", 
+            "Desgoznar", "Rehalero", "Sema", "Antólogo", "Diacronía", 
+            "Marantáceo"
+        ];
+        
+        // Variables del juego
+        let nLevel = 1;
+        let delay = 2000; // 2 segundos por defecto
+        let gameMode = "simple";
+        let gameActive = false;
+        let currentIndex = 0;
+        let score = 0;
+        let errors = 0;
+        let sequence = []; // Izquierda/Simple
+        let dualSequence = []; // Central/Derecha (Dual)
+        let tripleSequence = []; // Derecha (Triple)
+        let timer;
+        let matches = 0;
+        let expectedMatches = 0;
+        
+        // Elementos del DOM
+        const startBtn = document.getElementById('startBtn');
+        const playAgainBtn = document.getElementById('playAgainBtn');
+        const backToGameBtn = document.getElementById('backToGameBtn');
+        const wordDisplay = document.getElementById('wordDisplay');
+        const levelDisplay = document.getElementById('levelDisplay');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const errorsDisplay = document.getElementById('errorsDisplay');
+        const matchABtn = document.getElementById('matchABtn');
+        const matchLBtn = document.getElementById('matchLBtn');
+        const matchKBtn = document.getElementById('matchKBtn'); // Nuevo botón
+        const finalScore = document.getElementById('finalScore');
+        const finalHits = document.getElementById('finalHits');
+        const finalAccuracy = document.getElementById('finalAccuracy');
+        const finalLevel = document.getElementById('finalLevel');
+        
+        // Navegación
+        const navBtns = document.querySelectorAll('.nav-btn');
+        const sections = document.querySelectorAll('.section');
+        
+        // Crear partículas de fondo
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 150; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.animationDuration = `${Math.random() * 10 + 5}s`;
+                particle.style.opacity = Math.random() * 0.7 + 0.3;
+                particle.style.width = `${Math.random() * 3 + 1}px`;
+                particle.style.height = particle.style.width;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Inicializar opciones de botones
+        function initOptions() {
+            const optionBtns = document.querySelectorAll('.option-btn');
+            optionBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remover clase activa del grupo
+                    btn.parentElement.querySelectorAll('.option-btn').forEach(b => {
+                        b.classList.remove('active');
+                    });
+                    
+                    // Agregar clase activa al botón seleccionado
+                    btn.classList.add('active');
+                    
+                    // Actualizar configuración
+                    const settingLabel = btn.parentElement.parentElement.querySelector('.setting-label').textContent;
+                    if (settingLabel.includes('Nivel N-back')) {
+                        nLevel = parseInt(btn.dataset.value);
+                    } else if (settingLabel.includes('Velocidad')) {
+                        delay = parseInt(btn.dataset.value) * 1000;
+                    } else if (settingLabel.includes('Modo de Juego')) {
+                        gameMode = btn.dataset.value;
+                    }
+                });
+            });
+        }
+        
+        // Navegación entre secciones
+        function setupNavigation() {
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const target = btn.dataset.target;
+                    
+                    // Actualizar botones activos
+                    navBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    // Ocultar todas las secciones
+                    sections.forEach(section => {
+                        section.style.display = 'none';
+                    });
+                    
+                    // Mostrar sección objetivo
+                    document.getElementById(target).style.display = 'flex';
+                    
+                    // Desplazar a la sección (Se ha quitado scrollIntoView para el body scroll)
+                    // document.getElementById(target).scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+        }
+        
+        // Generar secuencia de palabras
+        function generateSequence() {
+            sequence = [];
+            dualSequence = [];
+            tripleSequence = [];
+            currentIndex = 0;
+            score = 0;
+            errors = 0;
+            matches = 0;
+            expectedMatches = 0;
+            
+            // Actualizar pantalla
+            levelDisplay.textContent = nLevel;
+            scoreDisplay.textContent = score;
+            errorsDisplay.textContent = errors;
+            
+            const sequenceLength = 20 + nLevel * 2;
+            
+            for (let i = 0; i < sequenceLength; i++) {
+                // Columna 1 (Izquierda)
+                const randomIndex1 = Math.floor(Math.random() * wordList.length);
+                sequence.push(wordList[randomIndex1]);
+                
+                // Generar coincidencia Columna 1
+                if (i >= nLevel && Math.random() < 0.3) {
+                    sequence[i] = sequence[i - nLevel];
+                    expectedMatches++;
+                }
+
+                // Columna 2 (Dual/Central)
+                if (gameMode === "dual" || gameMode === "triple") {
+                    const randomIndex2 = Math.floor(Math.random() * wordList.length);
+                    dualSequence.push(wordList[randomIndex2]);
+                    
+                    // Generar coincidencia Columna 2
+                    if (i >= nLevel && Math.random() < 0.3) {
+                        dualSequence[i] = dualSequence[i - nLevel];
+                        expectedMatches++;
+                    }
+                }
+                
+                // Columna 3 (Triple)
+                if (gameMode === "triple") {
+                    const randomIndex3 = Math.floor(Math.random() * wordList.length);
+                    tripleSequence.push(wordList[randomIndex3]);
+                    
+                    // Generar coincidencia Columna 3
+                    if (i >= nLevel && Math.random() < 0.3) {
+                        tripleSequence[i] = tripleSequence[i - nLevel];
+                        expectedMatches++;
+                    }
+                }
+            }
+        }
+        
+        // Mostrar siguiente palabra
+        function showNextWord() {
+            if (currentIndex >= sequence.length) {
+                endGame();
+                return;
+            }
+            
+            // Mostrar palabra(s) actual(es)
+            if (gameMode === "simple") {
+                wordDisplay.textContent = sequence[currentIndex];
+                wordDisplay.classList.remove('fade-in');
+                void wordDisplay.offsetWidth; // Reiniciar animación
+                wordDisplay.classList.add('fade-in');
+            } else if (gameMode === "dual") {
+                wordDisplay.innerHTML = `
+                    <div class="dual-display">
+                        <div class="dual-column">
+                            <div class="dual-label">Columna Izquierda <span class="key-indicator">A</span></div>
+                            <div class="word-box fade-in">${sequence[currentIndex]}</div>
+                        </div>
+                        <div class="dual-column">
+                            <div class="dual-label">Columna Derecha <span class="key-indicator">L</span></div>
+                            <div class="word-box fade-in">${dualSequence[currentIndex]}</div>
+                        </div>
+                    </div>
+                `;
+            } else if (gameMode === "triple") {
+                wordDisplay.innerHTML = `
+                    <div class="triple-display">
+                        <div class="triple-column">
+                            <div class="dual-label">Col. Izquierda <span class="key-indicator">A</span></div>
+                            <div class="word-box fade-in">${sequence[currentIndex]}</div>
+                        </div>
+                        <div class="triple-column">
+                            <div class="dual-label">Col. Central <span class="key-indicator">L</span></div>
+                            <div class="word-box fade-in">${dualSequence[currentIndex]}</div>
+                        </div>
+                        <div class="triple-column">
+                            <div class="dual-label">Col. Derecha <span class="key-indicator">K</span></div>
+                            <div class="word-box fade-in">${tripleSequence[currentIndex]}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            currentIndex++;
+            
+            // Configurar temporizador para la siguiente palabra
+            timer = setTimeout(showNextWord, delay);
+        }
+        
+        // Comprobar coincidencia
+        function checkMatch(column) {
+            if (!gameActive || currentIndex <= nLevel) return;
+            
+            let actualMatch = false;
+            let btnToPulse = null;
+            
+            // Definir qué secuencia y qué botón usar
+            if (gameMode === "simple") {
+                actualMatch = sequence[currentIndex - 1] === sequence[currentIndex - 1 - nLevel];
+                btnToPulse = matchABtn;
+            } else if (gameMode === "dual") {
+                if (column === 'left') {
+                    actualMatch = sequence[currentIndex - 1] === sequence[currentIndex - 1 - nLevel];
+                    btnToPulse = matchABtn;
+                } else { // 'right'
+                    actualMatch = dualSequence[currentIndex - 1] === dualSequence[currentIndex - 1 - nLevel];
+                    btnToPulse = matchLBtn;
+                }
+            } else if (gameMode === "triple") {
+                if (column === 'left') {
+                    actualMatch = sequence[currentIndex - 1] === sequence[currentIndex - 1 - nLevel];
+                    btnToPulse = matchABtn;
+                } else if (column === 'center') {
+                    actualMatch = dualSequence[currentIndex - 1] === dualSequence[currentIndex - 1 - nLevel];
+                    btnToPulse = matchLBtn;
+                } else { // 'right'
+                    actualMatch = tripleSequence[currentIndex - 1] === tripleSequence[currentIndex - 1 - nLevel];
+                    btnToPulse = matchKBtn;
+                }
+            }
+
+            // Comprobar si el jugador acertó
+            if (actualMatch) {
+                score++;
+                scoreDisplay.textContent = score;
+                matches++;
+                
+                // Resaltar visualmente la respuesta correcta
+                if (btnToPulse) {
+                    btnToPulse.classList.add('pulse');
+                    setTimeout(() => btnToPulse.classList.remove('pulse'), 500);
+                }
+            } else {
+                errors++;
+                errorsDisplay.textContent = errors;
+                
+                // Resaltar visualmente el error
+                if (btnToPulse) {
+                    const originalBg = btnToPulse.style.background;
+                    btnToPulse.style.background = 'linear-gradient(90deg, #ff4757, #ff6b81)';
+                    setTimeout(() => {
+                        btnToPulse.style.background = originalBg;
+                    }, 500);
+                }
+            }
+        }
+        
+        // Iniciar juego
+        function startGame() {
+            if (gameActive) return;
+            
+            gameActive = true;
+            generateSequence();
+            
+            wordDisplay.innerHTML = `<div style="text-align: center; animation: fadeIn 1s ease;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 3rem; margin-bottom: 1rem; color: #ffb366;"></i>
+                <p>Preparando secuencia cósmica...</p>
+            </div>`;
+            
+            // Ajustar visibilidad de botones según el modo
+            matchLBtn.style.display = (gameMode === "dual" || gameMode === "triple") ? 'flex' : 'none';
+            matchKBtn.style.display = (gameMode === "triple") ? 'flex' : 'none';
+            
+            // Navegar a la sección de juego
+            document.querySelector('[data-target="game-section"]').click();
+            
+            // Esperar un momento antes de comenzar
+            setTimeout(() => {
+                showNextWord();
+            }, 1500);
+        }
+        
+        // Finalizar juego
+        function endGame() {
+            gameActive = false;
+            clearTimeout(timer);
+            
+            const accuracy = expectedMatches > 0 ? Math.round((matches / expectedMatches) * 100) : 0;
+            
+            // Actualizar resultados
+            finalScore.textContent = score;
+            finalHits.textContent = `${matches}/${expectedMatches}`;
+            finalAccuracy.textContent = `${accuracy}%`;
+            finalLevel.textContent = `${nLevel}-back`;
+            
+            // Navegar a la sección de resultados
+            setTimeout(() => {
+                document.querySelector('[data-target="results-section"]').click();
+            }, 800);
+        }
+        
+        // Event listeners
+        startBtn.addEventListener('click', startGame);
+        playAgainBtn.addEventListener('click', startGame);
+        backToGameBtn.addEventListener('click', () => {
+            document.querySelector('[data-target="game-section"]').click();
+        });
+        matchABtn.addEventListener('click', () => checkMatch('left'));
+        matchLBtn.addEventListener('click', () => {
+             // En modo Dual, 'L' es la columna derecha. En modo Triple, 'L' es la columna central.
+            checkMatch(gameMode === "dual" ? 'right' : 'center');
+        });
+        matchKBtn.addEventListener('click', () => checkMatch('right')); // 'K' siempre es la columna derecha en modo triple
+
+        
+        // Eventos de teclado
+        document.addEventListener('keydown', (e) => {
+            if (!gameActive) return;
+            
+            const key = e.key.toLowerCase();
+
+            if (key === 'a') {
+                checkMatch('left');
+                matchABtn.classList.add('pulse');
+                setTimeout(() => matchABtn.classList.remove('pulse'), 200);
+            }
+            
+            if ((key === 'l') && (gameMode === "dual" || gameMode === "triple")) {
+                // Si es dual, 'L' es la derecha. Si es triple, 'L' es la central.
+                checkMatch(gameMode === "dual" ? 'right' : 'center'); 
+                matchLBtn.classList.add('pulse');
+                setTimeout(() => matchLBtn.classList.remove('pulse'), 200);
+            }
+
+            if ((key === 'k') && gameMode === "triple") {
+                checkMatch('right');
+                matchKBtn.classList.add('pulse');
+                setTimeout(() => matchKBtn.classList.remove('pulse'), 200);
+            }
+        });
+        
+        // Inicializar
+        createParticles();
+        initOptions();
+        setupNavigation();
+        
+        // Mostrar sección de configuración por defecto
+        document.getElementById('config-section').style.display = 'flex';
+    </script>
+</body>
+</html>
