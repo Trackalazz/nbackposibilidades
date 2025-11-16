@@ -34,7 +34,38 @@
             scroll-behavior: smooth;
         }
         
-        /* NavegaciÛn flotante */
+        /* Bot√≥n de alternar navegaci√≥n */
+        .nav-toggle {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(0);
+            background: var(--secondary-gradient);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 101;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 5px 15px rgba(255, 126, 95, 0.5);
+        }
+
+        /* Ocultar la barra de navegaci√≥n y mover el bot√≥n de alternar ligeramente */
+        .floating-nav.hidden {
+            transform: translateX(-50%) translateY(100px);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .nav-toggle.hidden-state {
+            bottom: 1.5rem;
+            box-shadow: 0 0 10px rgba(255, 126, 95, 0.8);
+        }
+        
+        /* Navegaci√≥n flotante */
         .floating-nav {
             position: fixed;
             bottom: 1.5rem;
@@ -49,6 +80,7 @@
             z-index: 100;
             border: 1px solid rgba(255, 255, 255, 0.15);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease-in-out;
         }
         
         .nav-btn {
@@ -78,7 +110,7 @@
         
         /* Secciones principales */
         .section {
-            /* Se mantiene para el efecto de una sola p·gina, pero el body permite el scroll */
+            /* Se mantiene para el efecto de una sola p√°gina, pero el body permite el scroll */
             min-height: 100vh; 
             padding: 5rem 1.5rem 6rem 1.5rem;
             display: flex;
@@ -113,7 +145,7 @@
             line-height: 1.6;
         }
         
-        /* SecciÛn de configuraciÛn */
+        /* Secci√≥n de configuraci√≥n */
         .control-panel {
             background: var(--card-bg);
             border-radius: 20px;
@@ -198,7 +230,7 @@
             box-shadow: 0 10px 20px rgba(255, 126, 95, 0.4);
         }
         
-        /* SecciÛn de juego */
+        /* Secci√≥n de juego */
         .game-container {
             width: 100%;
             max-width: 1000px; /* Aumentado para triple mode */
@@ -375,8 +407,8 @@
             background: linear-gradient(90deg, #4facfe, #00f2fe); /* Azul/Cian */
         }
 
-        .match-btn-k {
-            background: linear-gradient(90deg, #8e2de2, #4a00e0); /* P˙rpura */
+        .match-btn-√± { /* Actualizado de k a √± */
+            background: linear-gradient(90deg, #8e2de2, #4a00e0); /* P√∫rpura */
         }
         
         .match-btn-a:hover {
@@ -387,11 +419,11 @@
             box-shadow: 0 10px 25px rgba(0, 242, 254, 0.4);
         }
 
-        .match-btn-k:hover {
+        .match-btn-√±:hover { /* Actualizado de k a √± */
             box-shadow: 0 10px 25px rgba(142, 45, 226, 0.4);
         }
         
-        /* SecciÛn de resultados */
+        /* Secci√≥n de resultados */
         .results-container {
             width: 100%;
             max-width: 800px;
@@ -488,7 +520,7 @@
             font-size: 1.5rem;
         }
         
-        /* Efectos de partÌculas de fondo */
+        /* Efectos de part√≠culas de fondo */
         .particles {
             position: fixed;
             top: 0;
@@ -686,10 +718,14 @@
 <body>
     <div class="particles" id="particles"></div>
     
-    <nav class="floating-nav">
+    <button class="nav-toggle" id="navToggle">
+        <i class="fas fa-eye"></i> Ocultar Men√∫
+    </button>
+
+    <nav class="floating-nav" id="floatingNav">
         <button class="nav-btn active" data-target="config-section">
             <i class="fas fa-cog"></i>
-            <span>ConfiguraciÛn</span>
+            <span>Configuraci√≥n</span>
         </button>
         <button class="nav-btn" data-target="game-section">
             <i class="fas fa-gamepad"></i>
@@ -708,7 +744,7 @@
     <section id="config-section" class="section">
         <div class="section-header">
             <h1 class="section-title">CosmoN-back</h1>
-            <p class="section-subtitle">Entrena tu memoria con este desafÌo cÛsmico de palabras</p>
+            <p class="section-subtitle">Entrena tu memoria con este desaf√≠o c√≥smico de palabras</p>
         </div>
         
         <div class="control-panel">
@@ -750,14 +786,14 @@
         </div>
         
         <button class="btn" id="startBtn">
-            <i class="fas fa-rocket"></i> Iniciar Viaje CÛsmico
+            <i class="fas fa-rocket"></i> Iniciar Viaje C√≥smico
         </button>
     </section>
     
     <section id="game-section" class="section" style="display: none;">
         <div class="section-header">
-            <h1 class="section-title">DesafÌo CÛsmico</h1>
-            <p class="section-subtitle">°EnfÛcate y demuestra tu poder de memoria!</p>
+            <h1 class="section-title">Desaf√≠o C√≥smico</h1>
+            <p class="section-subtitle">¬°Enf√≥cate y demuestra tu poder de memoria!</p>
         </div>
         
         <div class="game-container">
@@ -779,7 +815,7 @@
                 <div class="word-display" id="wordDisplay">
                     <div style="text-align: center;">
                         <i class="fas fa-spinner fa-spin" style="font-size: 3rem; margin-bottom: 1rem; color: #ffb366;"></i>
-                        <p>Preparando el viaje cÛsmico...</p>
+                        <p>Preparando el viaje c√≥smico...</p>
                     </div>
                 </div>
             </div>
@@ -793,9 +829,9 @@
                     <span>Coincide (L)</span>
                     <span class="key-indicator">L</span>
                 </button>
-                <button class="control-btn match-btn-k" id="matchKBtn" style="display: none;">
-                    <span>Coincide (K)</span>
-                    <span class="key-indicator">K</span>
+                <button class="control-btn match-btn-√±" id="match√ëBtn" style="display: none;">
+                    <span>Coincide (√ë)</span>
+                    <span class="key-indicator">√ë</span>
                 </button>
             </div>
         </div>
@@ -804,15 +840,15 @@
     <section id="results-section" class="section" style="display: none;">
         <div class="section-header">
             <h1 class="section-title">Resultados Estelares</h1>
-            <p class="section-subtitle">Revisa tu desempeÒo en el desafÌo cÛsmico</p>
+            <p class="section-subtitle">Revisa tu desempe√±o en el desaf√≠o c√≥smico</p>
         </div>
         
         <div class="results-container">
-            <h2 class="results-title">Tu Viaje CÛsmico</h2>
+            <h2 class="results-title">Tu Viaje C√≥smico</h2>
             
             <div class="results-stats">
                 <div class="result-item">
-                    <span class="result-label">PuntuaciÛn Total:</span>
+                    <span class="result-label">Puntuaci√≥n Total:</span>
                     <span class="result-value" id="finalScore">0</span>
                 </div>
                 <div class="result-item">
@@ -820,7 +856,7 @@
                     <span class="result-value" id="finalHits">0/0</span>
                 </div>
                 <div class="result-item">
-                    <span class="result-label">PrecisiÛn:</span>
+                    <span class="result-label">Precisi√≥n:</span>
                     <span class="result-value" id="finalAccuracy">0%</span>
                 </div>
                 <div class="result-item">
@@ -837,92 +873,92 @@
     
     <section id="instructions-section" class="section" style="display: none;">
         <div class="section-header">
-            <h1 class="section-title">Instrucciones CÛsmicas</h1>
-            <p class="section-subtitle">Aprende cÛmo dominar el desafÌo de memoria</p>
+            <h1 class="section-title">Instrucciones C√≥smicas</h1>
+            <p class="section-subtitle">Aprende c√≥mo dominar el desaf√≠o de memoria</p>
         </div>
         
         <div class="instructions-container">
-            <h2 class="instructions-title">GuÌa del Viajero Estelar</h2>
+            <h2 class="instructions-title">Gu√≠a del Viajero Estelar</h2>
             
             <div class="instructions-content">
                 <div class="instruction-card">
-                    <h3><i class="fas fa-brain"></i> Concepto B·sico</h3>
-                    <p>El juego N-back es un ejercicio de memoria que te desafÌa a recordar informaciÛn presentada "N" pasos atr·s en la secuencia.</p>
+                    <h3><i class="fas fa-brain"></i> Concepto B√°sico</h3>
+                    <p>El juego N-back es un ejercicio de memoria que te desaf√≠a a recordar informaci√≥n presentada "N" pasos atr√°s en la secuencia.</p>
                 </div>
                 
                 <div class="instruction-card">
                     <h3><i class="fas fa-gamepad"></i> Modo Simple</h3>
-                    <p>En este modo, se presenta una palabra a la vez. Presiona **"Coincide (A)"** cuando la palabra actual coincida con la que apareciÛ 'N' pasos atr·s.</p>
+                    <p>En este modo, se presenta una palabra a la vez. Presiona **"Coincide (A)"** cuando la palabra actual coincida con la que apareci√≥ 'N' pasos atr√°s.</p>
                 </div>
                 
                 <div class="instruction-card">
                     <h3><i class="fas fa-chess-board"></i> Modo Dual</h3>
-                    <p>En modo dual, se presentan dos palabras simult·neamente. Presiona **"Coincide (A)"** para la columna izquierda o **"Coincide (L)"** para la derecha cuando detectes una coincidencia en la respectiva columna.</p>
+                    <p>En modo dual, se presentan dos palabras simult√°neamente. Presiona **"Coincide (A)"** para la columna izquierda o **"Coincide (L)"** para la derecha cuando detectes una coincidencia en la respectiva columna.</p>
                 </div>
 
                 <div class="instruction-card">
-                    <h3><i class="fas fa-layer-group"></i> Modo Triple (°Nuevo!)</h3>
-                    <p>En modo triple, se presentan tres palabras. Utiliza **"Coincide (A)"** para la izquierda, **"Coincide (L)"** para la columna central, y **"Coincide (K)"** para la columna de la derecha.</p>
+                    <h3><i class="fas fa-layer-group"></i> Modo Triple (¬°Nuevo!)</h3>
+                    <p>En modo triple, se presentan tres palabras. Utiliza **"Coincide (A)"** para la izquierda, **"Coincide (L)"** para la columna central, y **"Coincide (√ë)"** para la columna de la derecha.</p>
                 </div>
                 
                 <div class="instruction-card">
-                    <h3><i class="fas fa-chart-line"></i> ProgresiÛn</h3>
-                    <p>Comienza con niveles bajos (1-back o 2-back) y aumenta gradualmente la dificultad. Los niveles m·s altos requieren mayor capacidad de memoria.</p>
+                    <h3><i class="fas fa-chart-line"></i> Progresi√≥n</h3>
+                    <p>Comienza con niveles bajos (1-back o 2-back) y aumenta gradualmente la dificultad. Los niveles m√°s altos requieren mayor capacidad de memoria.</p>
                 </div>
             </div>
         </div>
         
         <button class="btn" id="backToGameBtn">
-            <i class="fas fa-rocket"></i> Comenzar DesafÌo
+            <i class="fas fa-rocket"></i> Comenzar Desaf√≠o
         </button>
     </section>
 
     <script>
-        // Lista de palabras proporcionada
+        // Lista de palabras proporcionada (con acentos y √ë correctamente codificados en UTF-8)
         const wordList = [
-            "Luminaria", "Eutimia democrÌtea", "Griota", "Mansionario", "Peristilo", 
-            "ReflaciÛn", "GolmajerÌas", "Talabartero", "Tanaceto", "Niple", 
-            "Floema", "Eclisa", "Entreverar", "VelÛn", "Liza", 
-            "Escala de Kinsey", "Letargia", "Ulema", "Alcrebite", "AlmuÈdano", 
+            "Luminaria", "Eutimia democr√≠tea", "Griota", "Mansionario", "Peristilo", 
+            "Reflaci√≥n", "Golmajer√≠as", "Talabartero", "Tanaceto", "Niple", 
+            "Floema", "Eclisa", "Entreverar", "Vel√≥n", "Liza", 
+            "Escala de Kinsey", "Letargia", "Ulema", "Alcrebite", "Almu√©dano", 
             "Injerencia", "Gopi", "Sari", "Arlocarpo", "Anatematizar", 
-            "Atiplar", "Refrendar", "Heraldo", "Ruar", "Maraj·", 
-            "Vermiforme", "Diquelar", "Conterr·neo", "Ic·stico", "Clariosa", 
-            "AlienÌgeno", "Safismo", "EsclavÛn", "Veterotestamentario", "Certitud", 
-            "Contemporizar", "Parleruelo", "Anafaga", "NÌnfula", "Arcanidad", 
+            "Atiplar", "Refrendar", "Heraldo", "Ruar", "Maraj√°", 
+            "Vermiforme", "Diquelar", "Conterr√°neo", "Ic√°stico", "Clariosa", 
+            "Alien√≠geno", "Safismo", "Esclav√≥n", "Veterotestamentario", "Certitud", 
+            "Contemporizar", "Parleruelo", "Anafaga", "N√≠nfula", "Arcanidad", 
             "Linajudo", "Cendolilla", "Farota", "Indiyudicable", "Prohombre", 
             "Hozar", "Arrobar", "Ciar", "Monumentalismo", "Hontanar", 
             "Borbollonear", "Jalde", "Retallecer", "Rema", "Desenfadaderas", 
             "Ajaspajas", "Trinca", "Apofenia", "Anuencia", "Espita", 
-            "Ripio", "Callonca", "Advenedizo", "Zahondar", "SoteriologÌa", 
-            "Ganguear", "Atezar", "Existimar", "RabÌ", "SocaliÒa", 
-            "Harneruelo", "Tajuel", "Gualdrapa", "MamÌa", "Hipostariar", 
-            "Recipiendario", "Ventear", "Ventero", "Ludificar", "C·fila", 
-            "Impasse", "Personalismo", "Desrostrar", "Esguardamillar", "MunÌfico", 
-            "MonÛstolos", "Cristal de Murano", "Veranda", "Juridificar", "Deslavar", 
+            "Ripio", "Callonca", "Advenedizo", "Zahondar", "Soteriolog√≠a", 
+            "Ganguear", "Atezar", "Existimar", "Rab√≠", "Socali√±a", 
+            "Harneruelo", "Tajuel", "Gualdrapa", "Mam√≠a", "Hipostariar", 
+            "Recipiendario", "Ventear", "Ventero", "Ludificar", "C√°fila", 
+            "Impasse", "Personalismo", "Desrostrar", "Esguardamillar", "Mun√≠fico", 
+            "Mon√≥stolos", "Cristal de Murano", "Veranda", "Juridificar", "Deslavar", 
             "Deslavazar", "Alcaldable", "Mollejo", "Rafal", "Desbazadero", 
             "Zurriago", "Roela", "Olpe", "Herropea", "Desgalgadero", 
-            "Ramalear", "Torpor", "Estragamiento", "Anastos", "AnastÛmosis", 
-            "Anastar", "AnastasiografÌa", "MÛnada", "Causa p˙blica", "Impromptu", 
-            "F·mulo", "Fisga", "Encaecer", "Ministrar", "Contribular", 
-            "Protom·rtir", "JaraÌz", "Chafariz", "Zafariche", "Limazo", 
-            "Bilocarse", "Escarnecer", "Escarnidor", "Nosom·ntica", "Moyuelo", 
+            "Ramalear", "Torpor", "Estragamiento", "Anastos", "Anast√≥mosis", 
+            "Anastar", "Anastasiograf√≠a", "M√≥nada", "Causa p√∫blica", "Impromptu", 
+            "F√°mulo", "Fisga", "Encaecer", "Ministrar", "Contribular", 
+            "Protom√°rtir", "Jara√≠z", "Chafariz", "Zafariche", "Limazo", 
+            "Bilocarse", "Escarnecer", "Escarnidor", "Nosom√°ntica", "Moyuelo", 
             "Encalamocarse", "Albear", "Jalbegue", "Enjalbiego", "Faldegar", 
-            "Pugnaz", "Ultracrepidario", "SimonÌa", "Idiolecto", "Congloriar", 
-            "AÒascar", "LambiscÛn", "PatronÌmico", "Hipod·mico", "Leontina", 
+            "Pugnaz", "Ultracrepidario", "Simon√≠a", "Idiolecto", "Congloriar", 
+            "A√±ascar", "Lambisc√≥n", "Patron√≠mico", "Hipod√°mico", "Leontina", 
             "Salvoconducto", "Parihuela", "Ayuso", "Motilar", "Baroto", 
-            "Batanga", "Galeoto", "Proceleusm·tico", "Procela", "Rorante", 
-            "Di·laga", "Alperujo", "Esforrocinar", "Costribar", "Buhedo", 
-            "Buhedal", "Partear", "ConflaglaciÛn", "SosaÒar", "Raposo", 
-            "Calvero", "AirÛn", "Trilita", "Cabrillear", "Slot-Machine", 
-            "Encabritar", "Escamotear", "PitaÒoso", "Barcino", "Õmprobo", 
-            "AlmadÌa", "Trabucar", "Anonadar", "Roblar", "SupercherÌa", 
+            "Batanga", "Galeoto", "Proceleusm√°tico", "Procela", "Rorante", 
+            "Di√°laga", "Alperujo", "Esforrocinar", "Costribar", "Buhedo", 
+            "Buhedal", "Partear", "Conflaglaci√≥n", "Sosa√±ar", "Raposo", 
+            "Calvero", "Air√≥n", "Trilita", "Cabrillear", "Slot-Machine", 
+            "Encabritar", "Escamotear", "Pita√±oso", "Barcino", "√çmprobo", 
+            "Almad√≠a", "Trabucar", "Anonadar", "Roblar", "Supercher√≠a", 
             "Aplebeyar", "Sementera", "Yunto", "Volquete", "Descuaje", 
             "Roturar", "Cinerario", "Amartelamiento", "Fachenda", "Gollete", 
-            "Floresta", "JenÌzaro", "ApologÈtico", "Encomi·stico", "PatrÌstico", 
-            "AljÛfar", "Jaiberlia", "Estro", "Platea", "LadinizaciÛn", 
+            "Floresta", "Jen√≠zaro", "Apolog√©tico", "Encomi√°stico", "Patr√≠stico", 
+            "Alj√≥far", "Jaiberlia", "Estro", "Platea", "Ladinizaci√≥n", 
             "Lichera", "Redhibir", "Alunamiento", "Relinga", "Reveza", 
-            "Desgoznar", "Rehalero", "Sema", "AntÛlogo", "DiacronÌa", 
-            "Marant·ceo"
+            "Desgoznar", "Rehalero", "Sema", "Ant√≥logo", "Diacron√≠a", 
+            "Marant√°ceo"
         ];
         
         // Variables del juego
@@ -950,17 +986,20 @@
         const errorsDisplay = document.getElementById('errorsDisplay');
         const matchABtn = document.getElementById('matchABtn');
         const matchLBtn = document.getElementById('matchLBtn');
-        const matchKBtn = document.getElementById('matchKBtn'); // Nuevo botÛn
+        const match√ëBtn = document.getElementById('match√ëBtn'); // Bot√≥n √ë (antes K)
         const finalScore = document.getElementById('finalScore');
         const finalHits = document.getElementById('finalHits');
         const finalAccuracy = document.getElementById('finalAccuracy');
         const finalLevel = document.getElementById('finalLevel');
-        
-        // NavegaciÛn
+
+        // Elementos de Navegaci√≥n
+        const navToggle = document.getElementById('navToggle');
+        const floatingNav = document.getElementById('floatingNav');
         const navBtns = document.querySelectorAll('.nav-btn');
         const sections = document.querySelectorAll('.section');
+
         
-        // Crear partÌculas de fondo
+        // Crear part√≠culas de fondo
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
             for (let i = 0; i < 150; i++) {
@@ -977,6 +1016,20 @@
             }
         }
         
+        // Alternar navegaci√≥n (ocultar/mostrar)
+        function toggleNav() {
+            const isHidden = floatingNav.classList.toggle('hidden');
+            navToggle.classList.toggle('hidden-state');
+            
+            // Actualizar texto e icono del bot√≥n
+            const icon = navToggle.querySelector('i');
+            if (isHidden) {
+                navToggle.innerHTML = '<i class="fas fa-eye"></i> Mostrar Men√∫';
+            } else {
+                navToggle.innerHTML = '<i class="fas fa-eye-slash"></i> Ocultar Men√∫';
+            }
+        }
+
         // Inicializar opciones de botones
         function initOptions() {
             const optionBtns = document.querySelectorAll('.option-btn');
@@ -987,10 +1040,10 @@
                         b.classList.remove('active');
                     });
                     
-                    // Agregar clase activa al botÛn seleccionado
+                    // Agregar clase activa al bot√≥n seleccionado
                     btn.classList.add('active');
                     
-                    // Actualizar configuraciÛn
+                    // Actualizar configuraci√≥n
                     const settingLabel = btn.parentElement.parentElement.querySelector('.setting-label').textContent;
                     if (settingLabel.includes('Nivel N-back')) {
                         nLevel = parseInt(btn.dataset.value);
@@ -1003,7 +1056,7 @@
             });
         }
         
-        // NavegaciÛn entre secciones
+        // Navegaci√≥n entre secciones
         function setupNavigation() {
             navBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -1018,11 +1071,8 @@
                         section.style.display = 'none';
                     });
                     
-                    // Mostrar secciÛn objetivo
+                    // Mostrar secci√≥n objetivo
                     document.getElementById(target).style.display = 'flex';
-                    
-                    // Desplazar a la secciÛn (Se ha quitado scrollIntoView para el body scroll)
-                    // document.getElementById(target).scrollIntoView({ behavior: 'smooth' });
                 });
             });
         }
@@ -1093,7 +1143,7 @@
             if (gameMode === "simple") {
                 wordDisplay.textContent = sequence[currentIndex];
                 wordDisplay.classList.remove('fade-in');
-                void wordDisplay.offsetWidth; // Reiniciar animaciÛn
+                void wordDisplay.offsetWidth; // Reiniciar animaci√≥n
                 wordDisplay.classList.add('fade-in');
             } else if (gameMode === "dual") {
                 wordDisplay.innerHTML = `
@@ -1120,7 +1170,7 @@
                             <div class="word-box fade-in">${dualSequence[currentIndex]}</div>
                         </div>
                         <div class="triple-column">
-                            <div class="dual-label">Col. Derecha <span class="key-indicator">K</span></div>
+                            <div class="dual-label">Col. Derecha <span class="key-indicator">√ë</span></div>
                             <div class="word-box fade-in">${tripleSequence[currentIndex]}</div>
                         </div>
                     </div>
@@ -1140,7 +1190,7 @@
             let actualMatch = false;
             let btnToPulse = null;
             
-            // Definir quÈ secuencia y quÈ botÛn usar
+            // Definir qu√© secuencia y qu√© bot√≥n usar
             if (gameMode === "simple") {
                 actualMatch = sequence[currentIndex - 1] === sequence[currentIndex - 1 - nLevel];
                 btnToPulse = matchABtn;
@@ -1159,13 +1209,13 @@
                 } else if (column === 'center') {
                     actualMatch = dualSequence[currentIndex - 1] === dualSequence[currentIndex - 1 - nLevel];
                     btnToPulse = matchLBtn;
-                } else { // 'right'
+                } else { // 'right' (Columna √ë)
                     actualMatch = tripleSequence[currentIndex - 1] === tripleSequence[currentIndex - 1 - nLevel];
-                    btnToPulse = matchKBtn;
+                    btnToPulse = match√ëBtn;
                 }
             }
 
-            // Comprobar si el jugador acertÛ
+            // Comprobar si el jugador acert√≥
             if (actualMatch) {
                 score++;
                 scoreDisplay.textContent = score;
@@ -1200,14 +1250,14 @@
             
             wordDisplay.innerHTML = `<div style="text-align: center; animation: fadeIn 1s ease;">
                 <i class="fas fa-spinner fa-spin" style="font-size: 3rem; margin-bottom: 1rem; color: #ffb366;"></i>
-                <p>Preparando secuencia cÛsmica...</p>
+                <p>Preparando secuencia c√≥smica...</p>
             </div>`;
             
-            // Ajustar visibilidad de botones seg˙n el modo
+            // Ajustar visibilidad de botones seg√∫n el modo
             matchLBtn.style.display = (gameMode === "dual" || gameMode === "triple") ? 'flex' : 'none';
-            matchKBtn.style.display = (gameMode === "triple") ? 'flex' : 'none';
+            match√ëBtn.style.display = (gameMode === "triple") ? 'flex' : 'none';
             
-            // Navegar a la secciÛn de juego
+            // Navegar a la secci√≥n de juego
             document.querySelector('[data-target="game-section"]').click();
             
             // Esperar un momento antes de comenzar
@@ -1229,13 +1279,15 @@
             finalAccuracy.textContent = `${accuracy}%`;
             finalLevel.textContent = `${nLevel}-back`;
             
-            // Navegar a la secciÛn de resultados
+            // Navegar a la secci√≥n de resultados
             setTimeout(() => {
                 document.querySelector('[data-target="results-section"]').click();
             }, 800);
         }
         
         // Event listeners
+        navToggle.addEventListener('click', toggleNav); // A√±adido para ocultar/mostrar men√∫
+
         startBtn.addEventListener('click', startGame);
         playAgainBtn.addEventListener('click', startGame);
         backToGameBtn.addEventListener('click', () => {
@@ -1246,7 +1298,7 @@
              // En modo Dual, 'L' es la columna derecha. En modo Triple, 'L' es la columna central.
             checkMatch(gameMode === "dual" ? 'right' : 'center');
         });
-        matchKBtn.addEventListener('click', () => checkMatch('right')); // 'K' siempre es la columna derecha en modo triple
+        match√ëBtn.addEventListener('click', () => checkMatch('right')); // '√ë' es la columna derecha en modo triple
 
         
         // Eventos de teclado
@@ -1268,10 +1320,11 @@
                 setTimeout(() => matchLBtn.classList.remove('pulse'), 200);
             }
 
-            if ((key === 'k') && gameMode === "triple") {
+            // Manejo de la tecla '√±'
+            if ((key === '√±') && gameMode === "triple") {
                 checkMatch('right');
-                matchKBtn.classList.add('pulse');
-                setTimeout(() => matchKBtn.classList.remove('pulse'), 200);
+                match√ëBtn.classList.add('pulse');
+                setTimeout(() => match√ëBtn.classList.remove('pulse'), 200);
             }
         });
         
@@ -1280,7 +1333,7 @@
         initOptions();
         setupNavigation();
         
-        // Mostrar secciÛn de configuraciÛn por defecto
+        // Mostrar secci√≥n de configuraci√≥n por defecto
         document.getElementById('config-section').style.display = 'flex';
     </script>
 </body>
