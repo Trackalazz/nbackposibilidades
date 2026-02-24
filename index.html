@@ -570,6 +570,66 @@
             animation: float 4s ease-in-out infinite;
         }
         
+
+        .neuro-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .setting-card {
+            background: rgba(40, 35, 85, 0.6);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 14px;
+            padding: 1rem;
+        }
+
+        .setting-card label {
+            display: block;
+            color: var(--text-light);
+            margin-bottom: 0.6rem;
+            font-weight: 600;
+        }
+
+        .setting-card select {
+            width: 100%;
+            background: rgba(20, 15, 50, 0.9);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 0.7rem;
+        }
+
+        .setting-hint {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.14);
+            margin: 0.4rem 0 1rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0;
+            background: var(--secondary-gradient);
+            transition: width 0.25s linear;
+        }
+
+        .focus-dot {
+            font-size: 2.8rem;
+            color: rgba(255,255,255,0.7);
+            letter-spacing: 0.2rem;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .section {
@@ -783,6 +843,35 @@
                     <div class="option-btn" data-value="triple">Triple</div>
                 </div>
             </div>
+
+            <div class="neuro-grid">
+                <div class="setting-card">
+                    <label for="sessionLength">Duración de sesión</label>
+                    <select id="sessionLength">
+                        <option value="24">24 estímulos (corta)</option>
+                        <option value="32" selected>32 estímulos (estándar)</option>
+                        <option value="40">40 estímulos (intensa)</option>
+                    </select>
+                    <p class="setting-hint">Bloques de 2-4 minutos mejoran adherencia y evitan fatiga cognitiva.</p>
+                </div>
+                <div class="setting-card">
+                    <label for="stimulusStyle">Modalidad de estímulo</label>
+                    <select id="stimulusStyle">
+                        <option value="words" selected>Verbal pura</option>
+                        <option value="spatial">Visoespacial + verbal</option>
+                        <option value="interference">Con interferencia (lures)</option>
+                    </select>
+                    <p class="setting-hint">La interferencia controlada entrena inhibición y memoria de trabajo.</p>
+                </div>
+                <div class="setting-card">
+                    <label for="adaptiveMode">Dificultad adaptativa</label>
+                    <select id="adaptiveMode">
+                        <option value="on" selected>Activada</option>
+                        <option value="off">Fija</option>
+                    </select>
+                    <p class="setting-hint">Ajusta N y velocidad según precisión para mantener desafío óptimo.</p>
+                </div>
+            </div>
         </div>
         
         <button class="btn" id="startBtn">
@@ -808,8 +897,17 @@
                         <div class="stat-label">FALLOS</div>
                         <div class="stat-value" id="errorsDisplay">0</div>
                     </div>
+                    <div class="stat-box">
+                        <div class="stat-label">RACHA</div>
+                        <div class="stat-value" id="streakDisplay">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">RT MEDIO</div>
+                        <div class="stat-value" id="rtDisplay">0ms</div>
+                    </div>
                 </div>
             </div>
+            <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
             
             <div class="game-content">
                 <div class="word-display" id="wordDisplay">
@@ -864,6 +962,7 @@
                     <span class="result-value" id="finalLevel">1-back</span>
                 </div>
             </div>
+            <p class="section-subtitle" id="neuroTip" style="margin-bottom:1rem;">Sugerencia personalizada al finalizar la sesión.</p>
             
             <button class="btn" id="playAgainBtn">
                 <i class="fas fa-redo"></i> Jugar de Nuevo
@@ -874,7 +973,7 @@
     <section id="instructions-section" class="section" style="display: none;">
         <div class="section-header">
             <h1 class="section-title">Instrucciones Cósmicas</h1>
-            <p class="section-subtitle">Aprende cómo dominar el desafío de memoria</p>
+            <p class="section-subtitle">Aprende cómo dominar el desafío con principios actuales de neurociencia cognitiva</p>
         </div>
         
         <div class="instructions-container">
@@ -903,7 +1002,7 @@
                 
                 <div class="instruction-card">
                     <h3><i class="fas fa-chart-line"></i> Progresión</h3>
-                    <p>Comienza con niveles bajos (1-back o 2-back) y aumenta gradualmente la dificultad. Los niveles más altos requieren mayor capacidad de memoria.</p>
+                    <p>La versión adaptativa ajusta nivel y velocidad según tu precisión para mantenerte en zona de esfuerzo óptimo (ni aburrimiento ni saturación).</p>
                 </div>
             </div>
         </div>
@@ -960,23 +1059,28 @@
             "Desgoznar", "Rehalero", "Sema", "Antólogo", "Diacronía", 
             "Marantáceo"
         ];
-        
+
         // Variables del juego
         let nLevel = 1;
-        let delay = 2000; // 2 segundos por defecto
+        let delay = 2000;
         let gameMode = "simple";
         let gameActive = false;
         let currentIndex = 0;
         let score = 0;
         let errors = 0;
-        let sequence = []; // Izquierda/Simple
-        let dualSequence = []; // Central/Derecha (Dual)
-        let tripleSequence = []; // Derecha (Triple)
+        let streak = 0;
+        let sequence = [];
+        let dualSequence = [];
+        let tripleSequence = [];
         let timer;
         let matches = 0;
         let expectedMatches = 0;
-        
-        // Elementos del DOM
+        let sessionLength = 32;
+        let stimulusStyle = 'words';
+        let adaptiveMode = true;
+        let reactionTimes = [];
+        let currentStimulusAt = 0;
+
         const startBtn = document.getElementById('startBtn');
         const playAgainBtn = document.getElementById('playAgainBtn');
         const backToGameBtn = document.getElementById('backToGameBtn');
@@ -984,357 +1088,65 @@
         const levelDisplay = document.getElementById('levelDisplay');
         const scoreDisplay = document.getElementById('scoreDisplay');
         const errorsDisplay = document.getElementById('errorsDisplay');
+        const streakDisplay = document.getElementById('streakDisplay');
+        const rtDisplay = document.getElementById('rtDisplay');
+        const progressFill = document.getElementById('progressFill');
         const matchABtn = document.getElementById('matchABtn');
         const matchLBtn = document.getElementById('matchLBtn');
-        const matchÑBtn = document.getElementById('matchÑBtn'); // Botón Ñ (antes K)
+        const matchÑBtn = document.getElementById('matchÑBtn');
         const finalScore = document.getElementById('finalScore');
         const finalHits = document.getElementById('finalHits');
         const finalAccuracy = document.getElementById('finalAccuracy');
         const finalLevel = document.getElementById('finalLevel');
+        const neuroTip = document.getElementById('neuroTip');
+        const sessionLengthSelect = document.getElementById('sessionLength');
+        const stimulusStyleSelect = document.getElementById('stimulusStyle');
+        const adaptiveModeSelect = document.getElementById('adaptiveMode');
 
-        // Elementos de Navegación
         const navToggle = document.getElementById('navToggle');
         const floatingNav = document.getElementById('floatingNav');
         const navBtns = document.querySelectorAll('.nav-btn');
         const sections = document.querySelectorAll('.section');
 
-        
-        // Crear partículas de fondo
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            for (let i = 0; i < 150; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.top = `${Math.random() * 100}%`;
-                particle.style.animationDuration = `${Math.random() * 10 + 5}s`;
-                particle.style.opacity = Math.random() * 0.7 + 0.3;
-                particle.style.width = `${Math.random() * 3 + 1}px`;
-                particle.style.height = particle.style.width;
-                particle.style.animationDelay = `${Math.random() * 5}s`;
-                particlesContainer.appendChild(particle);
-            }
-        }
-        
-        // Alternar navegación (ocultar/mostrar)
-        function toggleNav() {
-            const isHidden = floatingNav.classList.toggle('hidden');
-            navToggle.classList.toggle('hidden-state');
-            
-            // Actualizar texto e icono del botón
-            const icon = navToggle.querySelector('i');
-            if (isHidden) {
-                navToggle.innerHTML = '<i class="fas fa-eye"></i> Mostrar Menú';
-            } else {
-                navToggle.innerHTML = '<i class="fas fa-eye-slash"></i> Ocultar Menú';
-            }
-        }
+        function createParticles() { const c=document.getElementById('particles'); for (let i=0;i<120;i++){ const p=document.createElement('div'); p.classList.add('particle'); p.style.left=`${Math.random()*100}%`; p.style.top=`${Math.random()*100}%`; p.style.opacity=Math.random()*0.7+0.2; p.style.width=`${Math.random()*3+1}px`; p.style.height=p.style.width; c.appendChild(p);} }
+        function toggleNav(){ const hidden=floatingNav.classList.toggle('hidden'); navToggle.classList.toggle('hidden-state'); navToggle.innerHTML=hidden?'<i class="fas fa-eye"></i> Mostrar Menú':'<i class="fas fa-eye-slash"></i> Ocultar Menú'; }
 
-        // Inicializar opciones de botones
-        function initOptions() {
-            const optionBtns = document.querySelectorAll('.option-btn');
-            optionBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    // Remover clase activa del grupo
-                    btn.parentElement.querySelectorAll('.option-btn').forEach(b => {
-                        b.classList.remove('active');
-                    });
-                    
-                    // Agregar clase activa al botón seleccionado
-                    btn.classList.add('active');
-                    
-                    // Actualizar configuración
-                    const settingLabel = btn.parentElement.parentElement.querySelector('.setting-label').textContent;
-                    if (settingLabel.includes('Nivel N-back')) {
-                        nLevel = parseInt(btn.dataset.value);
-                    } else if (settingLabel.includes('Velocidad')) {
-                        delay = parseInt(btn.dataset.value) * 1000;
-                    } else if (settingLabel.includes('Modo de Juego')) {
-                        gameMode = btn.dataset.value;
-                    }
-                });
-            });
+        function initOptions(){
+            document.querySelectorAll('.option-btn').forEach(btn=>btn.addEventListener('click',()=>{ btn.parentElement.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); const t=btn.parentElement.parentElement.querySelector('.setting-label').textContent; if(t.includes('Nivel')) nLevel=parseInt(btn.dataset.value,10); else if(t.includes('Velocidad')) delay=parseInt(btn.dataset.value,10)*1000; else gameMode=btn.dataset.value; }));
+            sessionLengthSelect.addEventListener('change',()=>sessionLength=parseInt(sessionLengthSelect.value,10));
+            stimulusStyleSelect.addEventListener('change',()=>stimulusStyle=stimulusStyleSelect.value);
+            adaptiveModeSelect.addEventListener('change',()=>adaptiveMode=adaptiveModeSelect.value==='on');
         }
-        
-        // Navegación entre secciones
-        function setupNavigation() {
-            navBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const target = btn.dataset.target;
-                    
-                    // Actualizar botones activos
-                    navBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    
-                    // Ocultar todas las secciones
-                    sections.forEach(section => {
-                        section.style.display = 'none';
-                    });
-                    
-                    // Mostrar sección objetivo
-                    document.getElementById(target).style.display = 'flex';
-                });
-            });
-        }
-        
-        // Generar secuencia de palabras
-        function generateSequence() {
-            sequence = [];
-            dualSequence = [];
-            tripleSequence = [];
-            currentIndex = 0;
-            score = 0;
-            errors = 0;
-            matches = 0;
-            expectedMatches = 0;
-            
-            // Actualizar pantalla
-            levelDisplay.textContent = nLevel;
-            scoreDisplay.textContent = score;
-            errorsDisplay.textContent = errors;
-            
-            const sequenceLength = 20 + nLevel * 2;
-            
-            for (let i = 0; i < sequenceLength; i++) {
-                // Columna 1 (Izquierda)
-                const randomIndex1 = Math.floor(Math.random() * wordList.length);
-                sequence.push(wordList[randomIndex1]);
-                
-                // Generar coincidencia Columna 1
-                if (i >= nLevel && Math.random() < 0.3) {
-                    sequence[i] = sequence[i - nLevel];
-                    expectedMatches++;
-                }
+        function setupNavigation(){ navBtns.forEach(btn=>btn.addEventListener('click',()=>{ navBtns.forEach(b=>b.classList.remove('active')); btn.classList.add('active'); sections.forEach(s=>s.style.display='none'); document.getElementById(btn.dataset.target).style.display='flex'; })); }
+        const pickWord=()=>wordList[Math.floor(Math.random()*wordList.length)];
+        const spatialize=(word,i)=>stimulusStyle==='spatial'?`${['↖','↑','↗','←','•','→','↙','↓','↘'][i%9]} ${word}`:word;
 
-                // Columna 2 (Dual/Central)
-                if (gameMode === "dual" || gameMode === "triple") {
-                    const randomIndex2 = Math.floor(Math.random() * wordList.length);
-                    dualSequence.push(wordList[randomIndex2]);
-                    
-                    // Generar coincidencia Columna 2
-                    if (i >= nLevel && Math.random() < 0.3) {
-                        dualSequence[i] = dualSequence[i - nLevel];
-                        expectedMatches++;
-                    }
-                }
-                
-                // Columna 3 (Triple)
-                if (gameMode === "triple") {
-                    const randomIndex3 = Math.floor(Math.random() * wordList.length);
-                    tripleSequence.push(wordList[randomIndex3]);
-                    
-                    // Generar coincidencia Columna 3
-                    if (i >= nLevel && Math.random() < 0.3) {
-                        tripleSequence[i] = tripleSequence[i - nLevel];
-                        expectedMatches++;
-                    }
-                }
-            }
-        }
-        
-        // Mostrar siguiente palabra
-        function showNextWord() {
-            if (currentIndex >= sequence.length) {
-                endGame();
-                return;
-            }
-            
-            // Mostrar palabra(s) actual(es)
-            if (gameMode === "simple") {
-                wordDisplay.textContent = sequence[currentIndex];
-                wordDisplay.classList.remove('fade-in');
-                void wordDisplay.offsetWidth; // Reiniciar animación
-                wordDisplay.classList.add('fade-in');
-            } else if (gameMode === "dual") {
-                wordDisplay.innerHTML = `
-                    <div class="dual-display">
-                        <div class="dual-column">
-                            <div class="dual-label">Columna Izquierda <span class="key-indicator">A</span></div>
-                            <div class="word-box fade-in">${sequence[currentIndex]}</div>
-                        </div>
-                        <div class="dual-column">
-                            <div class="dual-label">Columna Derecha <span class="key-indicator">L</span></div>
-                            <div class="word-box fade-in">${dualSequence[currentIndex]}</div>
-                        </div>
-                    </div>
-                `;
-            } else if (gameMode === "triple") {
-                wordDisplay.innerHTML = `
-                    <div class="triple-display">
-                        <div class="triple-column">
-                            <div class="dual-label">Col. Izquierda <span class="key-indicator">A</span></div>
-                            <div class="word-box fade-in">${sequence[currentIndex]}</div>
-                        </div>
-                        <div class="triple-column">
-                            <div class="dual-label">Col. Central <span class="key-indicator">L</span></div>
-                            <div class="word-box fade-in">${dualSequence[currentIndex]}</div>
-                        </div>
-                        <div class="triple-column">
-                            <div class="dual-label">Col. Derecha <span class="key-indicator">Ñ</span></div>
-                            <div class="word-box fade-in">${tripleSequence[currentIndex]}</div>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            currentIndex++;
-            
-            // Configurar temporizador para la siguiente palabra
-            timer = setTimeout(showNextWord, delay);
-        }
-        
-        // Comprobar coincidencia
-        function checkMatch(column) {
-            if (!gameActive || currentIndex <= nLevel) return;
-            
-            let actualMatch = false;
-            let btnToPulse = null;
-            
-            // Definir qué secuencia y qué botón usar
-            if (gameMode === "simple") {
-                actualMatch = sequence[currentIndex - 1] === sequence[currentIndex - 1 - nLevel];
-                btnToPulse = matchABtn;
-            } else if (gameMode === "dual") {
-                if (column === 'left') {
-                    actualMatch = sequence[currentIndex - 1] === sequence[currentIndex - 1 - nLevel];
-                    btnToPulse = matchABtn;
-                } else { // 'right'
-                    actualMatch = dualSequence[currentIndex - 1] === dualSequence[currentIndex - 1 - nLevel];
-                    btnToPulse = matchLBtn;
-                }
-            } else if (gameMode === "triple") {
-                if (column === 'left') {
-                    actualMatch = sequence[currentIndex - 1] === sequence[currentIndex - 1 - nLevel];
-                    btnToPulse = matchABtn;
-                } else if (column === 'center') {
-                    actualMatch = dualSequence[currentIndex - 1] === dualSequence[currentIndex - 1 - nLevel];
-                    btnToPulse = matchLBtn;
-                } else { // 'right' (Columna Ñ)
-                    actualMatch = tripleSequence[currentIndex - 1] === tripleSequence[currentIndex - 1 - nLevel];
-                    btnToPulse = matchÑBtn;
-                }
-            }
+        function generateLane(arr,lureRate=0){ for(let i=0;i<sessionLength;i++){ arr.push(pickWord()); if(i>=nLevel&&Math.random()<0.3){ arr[i]=arr[i-nLevel]; expectedMatches++; } else if(stimulusStyle==='interference'&&i>=nLevel+1&&Math.random()<lureRate){ arr[i]=arr[i-Math.max(1,nLevel-1)]; } arr[i]=spatialize(arr[i],i);} }
+        function generateSequence(){ sequence=[]; dualSequence=[]; tripleSequence=[]; currentIndex=0; score=0; errors=0; streak=0; matches=0; expectedMatches=0; reactionTimes=[]; generateLane(sequence,0.22); if(gameMode!=='simple') generateLane(dualSequence,0.18); if(gameMode==='triple') generateLane(tripleSequence,0.14); updateStats(); }
 
-            // Comprobar si el jugador acertó
-            if (actualMatch) {
-                score++;
-                scoreDisplay.textContent = score;
-                matches++;
-                
-                // Resaltar visualmente la respuesta correcta
-                if (btnToPulse) {
-                    btnToPulse.classList.add('pulse');
-                    setTimeout(() => btnToPulse.classList.remove('pulse'), 500);
-                }
-            } else {
-                errors++;
-                errorsDisplay.textContent = errors;
-                
-                // Resaltar visualmente el error
-                if (btnToPulse) {
-                    const originalBg = btnToPulse.style.background;
-                    btnToPulse.style.background = 'linear-gradient(90deg, #ff4757, #ff6b81)';
-                    setTimeout(() => {
-                        btnToPulse.style.background = originalBg;
-                    }, 500);
-                }
-            }
-        }
-        
-        // Iniciar juego
-        function startGame() {
-            if (gameActive) return;
-            
-            gameActive = true;
-            generateSequence();
-            
-            wordDisplay.innerHTML = `<div style="text-align: center; animation: fadeIn 1s ease;">
-                <i class="fas fa-spinner fa-spin" style="font-size: 3rem; margin-bottom: 1rem; color: #ffb366;"></i>
-                <p>Preparando secuencia cósmica...</p>
-            </div>`;
-            
-            // Ajustar visibilidad de botones según el modo
-            matchLBtn.style.display = (gameMode === "dual" || gameMode === "triple") ? 'flex' : 'none';
-            matchÑBtn.style.display = (gameMode === "triple") ? 'flex' : 'none';
-            
-            // Navegar a la sección de juego
-            document.querySelector('[data-target="game-section"]').click();
-            
-            // Esperar un momento antes de comenzar
-            setTimeout(() => {
-                showNextWord();
-            }, 1500);
-        }
-        
-        // Finalizar juego
-        function endGame() {
-            gameActive = false;
-            clearTimeout(timer);
-            
-            const accuracy = expectedMatches > 0 ? Math.round((matches / expectedMatches) * 100) : 0;
-            
-            // Actualizar resultados
-            finalScore.textContent = score;
-            finalHits.textContent = `${matches}/${expectedMatches}`;
-            finalAccuracy.textContent = `${accuracy}%`;
-            finalLevel.textContent = `${nLevel}-back`;
-            
-            // Navegar a la sección de resultados
-            setTimeout(() => {
-                document.querySelector('[data-target="results-section"]').click();
-            }, 800);
-        }
-        
-        // Event listeners
-        navToggle.addEventListener('click', toggleNav); // Añadido para ocultar/mostrar menú
+        function updateStats(){ levelDisplay.textContent=nLevel; scoreDisplay.textContent=score; errorsDisplay.textContent=errors; streakDisplay.textContent=streak; const avg=reactionTimes.length?Math.round(reactionTimes.reduce((a,b)=>a+b,0)/reactionTimes.length):0; rtDisplay.textContent=`${avg}ms`; progressFill.style.width=`${(currentIndex/Math.max(sessionLength,1))*100}%`; }
 
+        function showNextWord(){ if(currentIndex>=sequence.length){ endGame(); return; } wordDisplay.innerHTML='<div class="focus-dot">+</div>'; const pre=Math.max(250,Math.floor(delay*0.28)); timer=setTimeout(()=>{ if(gameMode==='simple'){ wordDisplay.textContent=sequence[currentIndex]; } else if(gameMode==='dual'){ wordDisplay.innerHTML=`<div class="dual-display"><div class="dual-column"><div class="dual-label">Izquierda <span class="key-indicator">A</span></div><div class="word-box fade-in">${sequence[currentIndex]}</div></div><div class="dual-column"><div class="dual-label">Derecha <span class="key-indicator">L</span></div><div class="word-box fade-in">${dualSequence[currentIndex]}</div></div></div>`; } else { wordDisplay.innerHTML=`<div class="triple-display"><div class="triple-column"><div class="dual-label">Izquierda <span class="key-indicator">A</span></div><div class="word-box fade-in">${sequence[currentIndex]}</div></div><div class="triple-column"><div class="dual-label">Central <span class="key-indicator">L</span></div><div class="word-box fade-in">${dualSequence[currentIndex]}</div></div><div class="triple-column"><div class="dual-label">Derecha <span class="key-indicator">Ñ</span></div><div class="word-box fade-in">${tripleSequence[currentIndex]}</div></div></div>`; } currentStimulusAt=performance.now(); currentIndex++; updateStats(); timer=setTimeout(showNextWord,delay-pre); },pre); }
+
+        function laneMatch(col){ if(col==='left') return sequence[currentIndex-1]===sequence[currentIndex-1-nLevel]; if(col==='center') return dualSequence[currentIndex-1]===dualSequence[currentIndex-1-nLevel]; if(gameMode==='dual') return dualSequence[currentIndex-1]===dualSequence[currentIndex-1-nLevel]; return tripleSequence[currentIndex-1]===tripleSequence[currentIndex-1-nLevel]; }
+        function checkMatch(col){ if(!gameActive||currentIndex<=nLevel) return; if(currentStimulusAt) reactionTimes.push(Math.round(performance.now()-currentStimulusAt)); if(laneMatch(col)){ score++; matches++; streak++; } else { errors++; streak=0; } updateStats(); }
+
+        function startGame(){ if(gameActive) return; gameActive=true; sessionLength=parseInt(sessionLengthSelect.value,10); stimulusStyle=stimulusStyleSelect.value; adaptiveMode=adaptiveModeSelect.value==='on'; generateSequence(); matchLBtn.style.display=(gameMode==='dual'||gameMode==='triple')?'flex':'none'; matchÑBtn.style.display=gameMode==='triple'?'flex':'none'; document.querySelector('[data-target="game-section"]').click(); wordDisplay.innerHTML='<div style="text-align:center"><i class="fas fa-brain" style="font-size:2.5rem;color:#ffb366"></i><p>Enfoca tu atención. Iniciando...</p></div>'; setTimeout(showNextWord,1000); }
+        function endGame(){ gameActive=false; clearTimeout(timer); const acc=expectedMatches>0?Math.round((matches/expectedMatches)*100):0; if(adaptiveMode){ if(acc>=80&&nLevel<8) nLevel++; else if(acc<55&&nLevel>1) nLevel--; if(acc>=80&&delay>1100) delay-=150; else if(acc<55&&delay<5000) delay+=200; } finalScore.textContent=score; finalHits.textContent=`${matches}/${expectedMatches}`; finalAccuracy.textContent=`${acc}%`; finalLevel.textContent=`${nLevel}-back`; const avg=reactionTimes.length?Math.round(reactionTimes.reduce((a,b)=>a+b,0)/reactionTimes.length):0; neuroTip.textContent=acc>=80?`Excelente control ejecutivo. Próxima sesión: prueba ${nLevel}-back y bloques cortos con pausas de 2-3 minutos. RT medio: ${avg}ms.`:`Prioriza precisión antes de velocidad. Mantén ${nLevel}-back, reduce distractores externos y usa respiración 4-6 entre bloques. RT medio: ${avg}ms.`; setTimeout(()=>document.querySelector('[data-target="results-section"]').click(),650); }
+
+        navToggle.addEventListener('click', toggleNav);
         startBtn.addEventListener('click', startGame);
         playAgainBtn.addEventListener('click', startGame);
-        backToGameBtn.addEventListener('click', () => {
-            document.querySelector('[data-target="game-section"]').click();
-        });
-        matchABtn.addEventListener('click', () => checkMatch('left'));
-        matchLBtn.addEventListener('click', () => {
-             // En modo Dual, 'L' es la columna derecha. En modo Triple, 'L' es la columna central.
-            checkMatch(gameMode === "dual" ? 'right' : 'center');
-        });
-        matchÑBtn.addEventListener('click', () => checkMatch('right')); // 'Ñ' es la columna derecha en modo triple
+        backToGameBtn.addEventListener('click', ()=>document.querySelector('[data-target="game-section"]').click());
+        matchABtn.addEventListener('click', ()=>checkMatch('left'));
+        matchLBtn.addEventListener('click', ()=>checkMatch(gameMode==='dual'?'right':'center'));
+        matchÑBtn.addEventListener('click', ()=>checkMatch('right'));
+        document.addEventListener('keydown', (e)=>{ if(!gameActive) return; const k=e.key.toLowerCase(); if(k==='a') checkMatch('left'); if(k==='l'&&(gameMode==='dual'||gameMode==='triple')) checkMatch(gameMode==='dual'?'right':'center'); if(k==='ñ'&&gameMode==='triple') checkMatch('right'); });
 
-        
-        // Eventos de teclado
-        document.addEventListener('keydown', (e) => {
-            if (!gameActive) return;
-            
-            const key = e.key.toLowerCase();
-
-            if (key === 'a') {
-                checkMatch('left');
-                matchABtn.classList.add('pulse');
-                setTimeout(() => matchABtn.classList.remove('pulse'), 200);
-            }
-            
-            if ((key === 'l') && (gameMode === "dual" || gameMode === "triple")) {
-                // Si es dual, 'L' es la derecha. Si es triple, 'L' es la central.
-                checkMatch(gameMode === "dual" ? 'right' : 'center'); 
-                matchLBtn.classList.add('pulse');
-                setTimeout(() => matchLBtn.classList.remove('pulse'), 200);
-            }
-
-            // Manejo de la tecla 'ñ'
-            if ((key === 'ñ') && gameMode === "triple") {
-                checkMatch('right');
-                matchÑBtn.classList.add('pulse');
-                setTimeout(() => matchÑBtn.classList.remove('pulse'), 200);
-            }
-        });
-        
-        // Inicializar
         createParticles();
         initOptions();
         setupNavigation();
-        
-        // Mostrar sección de configuración por defecto
         document.getElementById('config-section').style.display = 'flex';
-    </script>
+</script>
 </body>
 </html>
